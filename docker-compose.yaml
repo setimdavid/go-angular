@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  backend_commerce:
+    build: ./backend
+    ports:
+      - 2087:8155
+    depends_on:
+      - db_mssql_commerce
+    environment:
+      - DATABASE_URL=jdbc:sqlserver://db_mssql_commerce;databaseName=SpringDB
+      - LOG_DIR=/usr/src/app/logs
+    # volumes:
+    #   - .:/usr/src/app
+    networks:
+      - commerce_pal_multi_networks
+  frontend_commerce:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    environment:
+      - API_URL=http://backend_commerce:8090
+    # volumes:
+    #   - .:/app
+    networks:
+      - commerce_pal_multi_networks
+  db_mssql_commerce:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    volumes:
+      # - ~/apps/mssql/data:/var/lib/mssqlql/data
+      - /var/www/mssql/data:/var/opt/mssql/data
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Settim@2020
+    networks:
+      - commerce_pal_multi_networks
+
+volumes:
+  commerce_pal_multi_app:
+
+networks:
+  commerce_pal_multi_networks:
