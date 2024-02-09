@@ -10,7 +10,8 @@ func main() {
 	pass := os.Getenv("DB_PASS")
 	db, err := gorm.Open(
 		"postgres",
-		"host=students-db user=go password="+pass+" dbname=go sslmode=disable")
+		"host=my-postgres-db user=stimbeam_apps password="+pass+" dbname=go sslmode=disable")
+		// "host=172.19.0.2 port=5433 user=stimbeam_apps password="+pass+" dbname=go sslmode=disable")
 	if err != nil {
 		panic(err.Error())
 	}

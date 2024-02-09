@@ -1,10 +1,26 @@
-FROM golang:1.13.1-alpine AS GO_BUILD
-COPY server /server
-WORKDIR /server
-RUN go build -o /go/bin/server
+# Stage 1: Build the Go binary
+FROM golang:1.17 AS builder
 
-FROM alpine:3.10
-WORKDIR app
-COPY --from=GO_BUILD /go/bin/server ./
-RUN ls
-CMD ./server
+WORKDIR /app
+
+COPY . .
+
+# Build the Go binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o myapp .
+
+# Stage 2: Create a minimal runtime image
+FROM alpine:latest
+
+# Set necessary environment variables
+ENV PORT=8080
+
+WORKDIR /app
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/myapp .
+
+# Expose the port
+EXPOSE $PORT
+
+# Command to run the executable
+CMD ["./myapp"]
